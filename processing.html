@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="am" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>የሂደት ክፍያ | E-LMIS AUE</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <header class="main-nav">
+      <div class="container nav-wrapper">
+        <a href="index.html" class="brand-logo"
+          ><div class="brand-crest">AUE</div>
+          <div class="brand-text">
+            <h1>E-LMIS AUE</h1>
+            <span>የሂደት ክፍያ / PROCESSING FEE</span>
+          </div></a
+        >
+        <a href="profile.html" class="btn btn-secondary">OTP / My Profile</a>
+      </div>
+    </header>
+    <main class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">የሂደት ክፍያ / PROCESSING FEE</span>
+          <h2 class="section-title">Payment</h2>
+          <p class="section-subtitle">የሰነድ ማረጋገጫ እና የቅጥር ሂደት ክፍያ ማስረጃ ማያያዣ</p>
+        </div>
+        <div style="max-width: 720px; margin: 0 auto">
+          <div class="form-card">
+            <div
+              style="
+                background: #eff6ff;
+                border: 1.5px solid var(--accent-sky-border);
+                border-radius: var(--radius-md);
+                padding: 1.25rem;
+                margin-bottom: 1.75rem;
+              "
+            >
+              <span
+                style="
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                  color: var(--primary-deep);
+                  display: block;
+                  margin-bottom: 0.5rem;
+                "
+                >የኢትዮጵያ ንግድ ባንክ (CBE) አካውንት ቁጥር:</span
+              >
+              <div class="copy-box">
+                <span class="copy-text display-bank-account">1000671389712</span
+                ><button
+                  type="button"
+                  class="btn btn-primary btn-copy copy-bank-btn"
+                >
+                  COPY
+                </button>
+              </div>
+              <span
+                style="
+                  font-size: 0.8rem;
+                  color: var(--text-muted);
+                  margin-top: 0.4rem;
+                  display: block;
+                "
+                >የክፍያ መጠን: <strong></strong></span
+              >
+            </div>
+            <form id="formProcessingPayment" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="processingOtpInput"
+                  >Applicant OTP /
+                  <span class="form-label-am">የአመልካች ልዩ OTP ኮድ</span>
+                  <span class="required">*</span></label
+                ><input
+                  type="text"
+                  id="processingOtpInput"
+                  class="form-control"
+                  placeholder="AUE-XXXXXX"
+                  style="font-family: monospace; text-transform: uppercase"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >Payment Screenshot /
+                  <span class="form-label-am"> ደረሰኝ ማስረጃ</span>
+                  <span class="required">*</span></label
+                >
+                <div class="upload-container" id="processingDropArea">
+                  <p style="font-weight: 700; color: var(--primary-deep)">
+                    ደረሰኝ ለመጫን እዚህ ይጫኑ
+                  </p>
+                  <span class="form-help">JPG, PNG, WEBP, PDF</span
+                  ><input
+                    type="file"
+                    id="processingReceiptInput"
+                    accept=".jpg,.jpeg,.png,.webp,.pdf"
+                    style="display: none"
+                    required
+                  />
+                </div>
+                <div
+                  id="processingPreviewName"
+                  style="
+                    margin-top: 0.5rem;
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                    color: var(--primary-blue);
+                    display: none;
+                  "
+                ></div>
+              </div>
+              <button
+                type="submit"
+                class="btn btn-gold btn-block"
+                id="btnSubmitProcessingPayment"
+              >
+                የ18,200 ETB ክፍያ ማስረጃውን ላክ / SUBMIT 18,200 ETB RECEIPT
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

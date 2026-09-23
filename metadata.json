@@ -1,0 +1,6 @@
+{
+  "name": "E-LMIS AUE",
+  "description": "የስራ እድል ምዝገባ እና አመልካች አስተዳደር ስርዓት - Employment Registration & Applicant Management Portal for Dubai, Kuwait, Qatar, and Saudi Arabia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

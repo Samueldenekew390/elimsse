@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="am" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ባንክ ስቴትመንት | E-LMIS AUE</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <header class="main-nav">
+      <div class="container nav-wrapper">
+        <a href="index.html" class="brand-logo"
+          ><div class="brand-crest">AUE</div>
+          <div class="brand-text">
+            <h1>E-LMIS AUE</h1>
+            <span>ባንክ ስቴትመንት / BANK STATEMENT</span>
+          </div></a
+        >
+        <a href="profile.html" class="btn btn-secondary">OTP / My Profile</a>
+      </div>
+    </header>
+    <main class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">ባንክ ስቴትመንት / BANK STATEMENT</span>
+          <h2 class="section-title">BANK STATEMENT</h2>
+          <p class="section-subtitle">Payment</p>
+        </div>
+        <div style="max-width: 720px; margin: 0 auto">
+          <div class="form-card">
+            <div
+              style="
+                background: #fffbeb;
+                border: 1.5px solid var(--gold-border);
+                border-radius: var(--radius-md);
+                padding: 1.25rem;
+                margin-bottom: 1.75rem;
+              "
+            >
+              <span
+                style="
+                  font-size: 0.85rem;
+                  font-weight: 700;
+                  color: var(--warning);
+                  display: block;
+                  margin-bottom: 0.5rem;
+                "
+                >ተመላሽ ክፍያ (Refundable Payment)</span
+              >
+              <div class="copy-box">
+                <span class="copy-text display-bank-account">1000671389712</span
+                ><button
+                  type="button"
+                  class="btn btn-primary btn-copy copy-bank-btn"
+                >
+                  COPY
+                </button>
+              </div>
+            </div>
+            <form id="formBankStatement" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="bankStatementOtpInput"
+                  >Applicant OTP /
+                  <span class="form-label-am">የአመልካች ልዩ OTP ኮድ</span>
+                  <span class="required">*</span></label
+                ><input
+                  type="text"
+                  id="bankStatementOtpInput"
+                  class="form-control"
+                  placeholder="AUE-XXXXXX"
+                  style="font-family: monospace; text-transform: uppercase"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label"
+                  >Payment Screenshot /
+                  <span class="form-label-am"
+                    >የባንክ ስቴትመንት ክፍያ ደረሰኝ </span
+                  >
+                  <span class="required">*</span></label
+                >
+                <div class="upload-container" id="bankStatementDropArea">
+                  <p style="font-weight: 700; color: var(--primary-deep)">
+                    ደረሰኝ ለመጫን እዚህ ይጫኑ
+                  </p>
+                  <span class="form-help">JPG, PNG, WEBP, PDF</span
+                  ><input
+                    type="file"
+                    id="bankStatementReceiptInput"
+                    accept=".jpg,.jpeg,.png,.webp,.pdf"
+                    style="display: none"
+                    required
+                  />
+                </div>
+                <div
+                  id="bankStatementPreviewName"
+                  style="
+                    margin-top: 0.5rem;
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                    color: var(--primary-blue);
+                    display: none;
+                  "
+                ></div>
+              </div>
+              <button
+                type="submit"
+                class="btn btn-gold btn-block"
+                id="btnSubmitBankStatement"
+              >
+                የባንክ ስቴትመንት ክፍያ ላክ / SUBMIT BANK STATEMENT
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div class="toast-container" id="toastContainer"></div>
+    <script type="module" src="config.js"></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="am" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>የኤሌክትሮኒክ ቪዛ ማረጋገጫ | E-LMIS AUE Visa Verification</title>
+    <meta name="description" content="ይፋዊ የኤሌክትሮኒክ ቪዛ ማረጋገጫ እና ሁኔታ መመልከቻ ገጽ።" />
+    <meta name="robots" content="noindex,nofollow" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Client-side QRCode Generator via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  </head>
+  <body>
+    <!-- Top Bar -->
+    <div class="gov-top-bar">
+      <div class="container gov-top-content">
+        <div class="gov-top-badge">
+          <span
+            >E-LMIS AUE ይፋዊ የቪዛ ማረጋገጫ መዝገብ | Official Verification System</span
+          >
+        </div>
+        <div class="gov-contact-quick">
+          <a href="index.html" style="color: #ffffff">ወደ ዋናው ገጽ ተመለስ / Home</a>
+        </div>
+      </div>
+    </div>
+
+    <main class="section" style="padding-top: 3rem">
+      <div class="container">
+        <!-- Search verification code form -->
+        <div
+          style="max-width: 580px; margin: 0 auto 2.5rem"
+          class="btn-no-print"
+        >
+          <div class="form-card" style="padding: 1.5rem">
+            <form id="verifySearchForm">
+              <label class="form-label" for="inputVerifyCode">
+                Visa Verification Code / የቪዛ ማረጋገጫ ቁጥር ያስገቡ
+              </label>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap">
+                <input
+                  type="text"
+                  id="inputVerifyCode"
+                  class="form-control"
+                  style="
+                    flex: 1;
+                    font-family: monospace;
+                    text-transform: uppercase;
+                  "
+                  placeholder="EV-XXXXXX"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  id="btnSearchVerification"
+                >
+                  አረጋግጥ / VERIFY
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div
+          id="verifyLoading"
+          style="display: none; text-align: center; padding: 3rem"
+        >
+          <p
+            style="
+              font-size: 1.1rem;
+              color: var(--text-muted);
+              font-weight: 600;
+            "
+          >
+            የቪዛ ማረጋገጫ በመፈለግ ላይ ነው... (Verifying...)
+          </p>
+        </div>
+
+        <!-- Error / Not Found State -->
+        <div
+          id="verifyNotFound"
+          style="display: none; text-align: center; padding: 3rem"
+          class="form-card"
+        >
+          <div
+            style="color: var(--danger); font-size: 3rem; margin-bottom: 0.5rem"
+          >
+            âš
+          </div>
+          <h3
+            style="
+              font-size: 1.35rem;
+              color: var(--danger);
+              margin-bottom: 0.5rem;
+            "
+          >
+            ትክክለኛ የቪዛ ማረጋገጫ ኮድ አልተገኘም።
+          </h3>
+          <p style="color: var(--text-muted)">
+            የተሳሳተ የማረጋገጫ ኮድ አስገብተዋል ወይም ቪዛው እስካሁን አልጸደቀም።
+          </p>
+        </div>
+
+        <!-- Electronic Visa Certificate Box -->
+        <div
+          id="verifyCertificateCard"
+          style="display: none"
+          class="evisa-certificate"
+        >
+          <!-- Header -->
+          <div class="evisa-header">
+            <div>
+              <span
+                style="
+                  font-size: 0.8rem;
+                  font-weight: 800;
+                  color: var(--gold);
+                  letter-spacing: 0.05em;
+                  display: block;
+                "
+              >
+                OFFICIAL ELECTRONIC RECORD
+              </span>
+              <h2
+                id="evisaCountryHeader"
+                style="
+                  font-size: 1.6rem;
+                  font-weight: 800;
+                  color: var(--primary-deep);
+                  margin-bottom: 0.2rem;
+                "
+              >
+                DUBAI WORK VISA RECORD
+              </h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted)">
+                E-LMIS AUE Employment Registration & Applicant System
+              </p>
+            </div>
+
+            <div style="text-align: right">
+              <span
+                class="badge badge-approved"
+                id="evisaStatusBadge"
+                style="font-size: 0.95rem; padding: 0.4rem 1rem"
+              >
+                âœ“ VERIFIED & APPROVED
+              </span>
+              <div
+                style="
+                  font-size: 0.75rem;
+                  color: var(--text-muted);
+                  margin-top: 0.35rem;
+                "
+              >
+                Ref: <strong id="evisaRefCode">EV-000000</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="evisa-body">
+            <!-- Photo Container -->
+            <div class="evisa-photo-box">
+              <img
+                id="evisaPhoto"
+                src=""
+                alt="Verified Applicant"
+                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'64\\' height=\\'64\\' viewBox=\\'0 0 24 24\\' fill=\\'%23cbd5e1\\'%3E%3Cpath d=\\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\\'/%3E%3C/svg%3E'"
+              />
+            </div>
+
+            <!-- Non-Sensitive Verified Details -->
+            <table class="evisa-details-table">
+              <tr>
+                <td class="evisa-label">Applicant Name / ሙሉ ስም:</td>
+                <td class="evisa-value" id="evisaApplicantName">-</td>
+              </tr>
+              <tr>
+                <td class="evisa-label">Destination Country / ሀገር:</td>
+                <td class="evisa-value" id="evisaCountryName">-</td>
+              </tr>
+              <tr>
+                <td class="evisa-label">Visa Classification / አይነት:</td>
+                <td class="evisa-value" id="evisaVisaType">
+                  Work Visa (የስራ ቪዛ)
+                </td>
+              </tr>
+              <tr>
+                <td class="evisa-label">Issue Date / የተሰጠበት ቀን:</td>
+                <td class="evisa-value" id="evisaIssueDate">-</td>
+              </tr>
+              <tr>
+                <td class="evisa-label">Expiry Date / የሚያበቃበት:</td>
+                <td class="evisa-value" id="evisaExpiryDate">-</td>
+              </tr>
+              <tr>
+                <td class="evisa-label">Travel Date / የጉዞ ቀን:</td>
+                <td class="evisa-value" id="evisaTravelDate">-</td>
+              </tr>
+            </table>
+
+            <!-- QR Code Box -->
+            <div class="evisa-qr-box">
+              <div id="evisaQrContainer" class="evisa-qr-img"></div>
+              <span
+                style="
+                  font-size: 0.7rem;
+                  color: var(--text-muted);
+                  display: block;
+                "
+              >
+                ይፋዊ ማረጋገጫ QR<br />(Secure Verification)
+              </span>
+            </div>
+          </div>
+
+          <!-- Official Disclaimer -->
+          <div
+            style="
+              border-top: 1px solid var(--border-light);
+              padding-top: 1.25rem;
+              margin-top: 1.5rem;
+              font-size: 0.8rem;
+              color: var(--text-muted);
+              line-height: 1.6;
+            "
+          >
+            <strong>ህጋዊ ማስታወሻ:</strong> ይህ ሰነድ በE-LMIS AUE የስራ እድል ምዝገባ እና አመልካች
+            አስተዳደር ስርዓት የተረጋገጠ ይፋዊ ኤሌክትሮኒክ መዝገብ (electronic record) ነው። ይፋዊ
+            የመንግስት ፓስፖርት ቪዛ ማህተም የሚሰጠው በኢትዮጵያ እና በተቀባይ ሀገር ኢምባሲ/ቆንስላ በኩል ነው።
+          </div>
+
+          <!-- Print Action -->
+          <div
+            style="margin-top: 1.5rem; text-align: center"
+            class="btn-no-print"
+          >
+            <button type="button" class="btn btn-primary" id="btnPrintEvisa">
+              ሰርተፊኬቱን አትም / PRINT RECORD
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="verify.js"></script>
+  </body>
+</html>

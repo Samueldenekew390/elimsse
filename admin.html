@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="am" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>የአስተዳዳሪ ፖርታል | E-LMIS AUE Staff Admin Portal</title>
+    <meta name="robots" content="noindex,nofollow" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body style="background: #f1f5f9">
+    <!-- Admin Header -->
+    <header
+      class="main-nav"
+      style="
+        background: var(--primary-deep);
+        border-bottom: 2px solid var(--gold);
+      "
+    >
+      <div class="container nav-wrapper">
+        <a href="index.html" class="brand-logo">
+          <div class="brand-crest">AUE</div>
+          <div class="brand-text">
+            <h1 style="color: #ffffff">E-LMIS AUE ADMIN</h1>
+            <span style="color: var(--accent-sky)"
+              >የአስተዳዳሪ እና ሰራተኞች መቆጣጠሪያ</span
+            >
+          </div>
+        </a>
+        <div
+          id="adminNavUserSection"
+          style="display: none; align-items: center; gap: 1rem"
+        >
+          <span
+            id="adminUserEmail"
+            style="color: #ffffff; font-size: 0.85rem; font-weight: 600"
+            >admin@elmis.gov</span
+          >
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="btnAdminLogout"
+            style="
+              min-height: 36px;
+              padding: 0.35rem 0.75rem;
+              font-size: 0.8rem;
+              background: rgba(255, 255, 255, 0.1);
+              border-color: rgba(255, 255, 255, 0.2);
+              color: #fff;
+            "
+          >
+            ውጣ / LOGOUT
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="section" style="padding-top: 2rem">
+      <div class="container">
+        <!-- 1. LOGIN SCREEN (shown if not authenticated) -->
+        <div id="adminLoginSection" style="max-width: 440px; margin: 3rem auto">
+          <div class="form-card" style="padding: 2.25rem">
+            <div style="text-align: center; margin-bottom: 1.5rem">
+              <div
+                style="
+                  width: 54px;
+                  height: 54px;
+                  background: var(--primary-deep);
+                  color: var(--gold);
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  margin: 0 auto 0.75rem;
+                  font-weight: 800;
+                  font-size: 1.25rem;
+                "
+              >
+                âœ“
+              </div>
+              <h2
+                style="
+                  font-size: 1.4rem;
+                  font-weight: 800;
+                  color: var(--primary-deep);
+                "
+              >
+                የአስተዳዳሪ መግቢያ
+              </h2>
+              <p style="font-size: 0.85rem; color: var(--text-muted)">
+                E-LMIS AUE Staff Authentication
+              </p>
+            </div>
+
+            <form id="adminLoginForm">
+              <div class="form-group">
+                <label class="form-label" for="adminLoginEmail"
+                  >ኢሜል / Email</label
+                >
+                <input
+                  type="email"
+                  id="adminLoginEmail"
+                  class="form-control"
+                  placeholder="admin@elmis.gov"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="adminLoginPassword"
+                  >የይለፍ ቃል / Password</label
+                >
+                <input
+                  type="password"
+                  id="adminLoginPassword"
+                  class="form-control"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+
+              <div style="margin-top: 1.5rem">
+                <button
+                  type="submit"
+                  class="btn btn-primary btn-block"
+                  id="btnAdminLoginSubmit"
+                >
+                  ግባ / LOGIN
+                </button>
+              </div>
+
+              <div
+                style="
+                  margin-top: 1.25rem;
+                  font-size: 0.8rem;
+                  text-align: center;
+                  color: var(--text-muted);
+                  background: #f8fafc;
+                  padding: 0.75rem;
+                  border-radius: var(--radius-sm);
+                  border: 1px dashed var(--border-color);
+                "
+              >
+                ማሳሰቢያ: አስተዳዳሪዎች በSupabase Auth የተመዘገቡ እና የAdmin ፈቃድ የተሰጣቸው ብቻ
+                መግባት ይችላሉ።
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. MAIN ADMIN DASHBOARD (shown when logged in) -->
+        <div id="adminDashboardSection" style="display: none">
+          <!-- Dashboard Navigation Tabs -->
+          <div
+            style="
+              display: flex;
+              gap: 0.5rem;
+              border-bottom: 2px solid var(--border-color);
+              margin-bottom: 1.5rem;
+              flex-wrap: wrap;
+            "
+          >
+            <button
+              type="button"
+              class="btn btn-primary admin-tab-btn active"
+              data-tab="applicants"
+            >
+              አመልካቾች (Applicants)
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary admin-tab-btn"
+              data-tab="payments"
+            >
+              ክፍያዎች (Payments)
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary admin-tab-btn"
+              data-tab="visas"
+            >
+              ቪዛ ማመልከቻዎች (Visas)
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary admin-tab-btn"
+              data-tab="appointments"
+            >
+              ቀጠሮዎች (Appointments)
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary admin-tab-btn"
+              data-tab="settings"
+            >
+              ቅንብሮች (Settings)
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary admin-tab-btn"
+              data-tab="logs"
+            >
+              የስራ እንቅስቃሴ (Audit Logs)
+            </button>
+          </div>
+
+          <!-- TAB 1: APPLICANTS -->
+          <div id="tabContentApplicants" class="admin-tab-content">
+            <!-- Filters Header -->
+            <div
+              class="form-card"
+              style="margin-bottom: 1.5rem; padding: 1.25rem"
+            >
+              <div
+                style="
+                  display: flex;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+                  align-items: flex-end;
+                "
+              >
+                <div style="flex: 1; min-width: 220px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >ፈልግ / Search (Name or OTP)</label
+                  >
+                  <input
+                    type="text"
+                    id="adminSearchApplicant"
+                    class="form-control"
+                    placeholder="Search by name or OTP..."
+                  />
+                </div>
+                <div style="width: 150px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >ሀገር / Country</label
+                  >
+                  <select id="adminFilterCountry" class="form-control">
+                    <option value="ALL">All Countries</option>
+                    <option value="Dubai">Dubai</option>
+                    <option value="Kuwait">Kuwait</option>
+                    <option value="Qatar">Qatar</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                  </select>
+                </div>
+                <div style="width: 150px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >ሁኔታ / Status</label
+                  >
+                  <select id="adminFilterStatus" class="form-control">
+                    <option value="ALL">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
+                <div style="width: 150px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >አይነት / Type</label
+                  >
+                  <select id="adminFilterType" class="form-control">
+                    <option value="ALL">All Types</option>
+                    <option value="eligible">Eligible (Form 1)</option>
+                    <option value="ineligible">Ineligible (Form 2)</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="btnRefreshApplicants"
+                  style="min-height: 42px"
+                >
+                  አድስ / Refresh
+                </button>
+              </div>
+            </div>
+
+            <!-- Applicants Table -->
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ፎቶ</th>
+                    <th>OTP</th>
+                    <th>ሙሉ ስም</th>
+                    <th>ሀገር</th>
+                    <th>ፆታ / እድሜ</th>
+                    <th>ስልክ ቁጥር</th>
+                    <th>ሁኔታ</th>
+                    <th>ቀን</th>
+                    <th>ተግባራት</th>
+                  </tr>
+                </thead>
+                <tbody id="adminApplicantsTbody">
+                  <tr>
+                    <td colspan="9" style="text-align: center; padding: 2rem">
+                      መረጃ በመጫን ላይ ነው...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 2: PAYMENTS -->
+          <div
+            id="tabContentPayments"
+            class="admin-tab-content"
+            style="display: none"
+          >
+            <div
+              class="form-card"
+              style="margin-bottom: 1.5rem; padding: 1.25rem"
+            >
+              <div
+                style="
+                  display: flex;
+                  gap: 1rem;
+                  align-items: center;
+                  justify-content: space-between;
+                  flex-wrap: wrap;
+                "
+              >
+                <h3
+                  style="
+                    font-size: 1.15rem;
+                    font-weight: 700;
+                    color: var(--primary-deep);
+                  "
+                >
+                  የክፍያ ደረሰኞች ማረጋገጫ (Payments & Receipts)
+                </h3>
+                <select
+                  id="adminFilterPaymentType"
+                  class="form-control"
+                  style="width: 220px"
+                >
+                  <option value="ALL">ሁሉም ክፍያዎች</option>
+                  <option value="registration">ምዝገባ (3,800 ETB)</option>
+                  <option value="processing">የሂደት (18,200 ETB)</option>
+                  <option value="bank_statement">
+                    ባንክ ስቴትመንት (46,300 ETB)
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>አመልካች</th>
+                    <th>የክፍያ አይነት</th>
+                    <th>መጠን</th>
+                    <th>የደረሰኝ ሰነድ</th>
+                    <th>የተላከበት ቀን</th>
+                    <th>ሁኔታ</th>
+                    <th>ውሳኔ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminPaymentsTbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem">
+                      ምንም የክፍያ መዝገብ አልተገኘም
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 3: VISAS -->
+          <div
+            id="tabContentVisas"
+            class="admin-tab-content"
+            style="display: none"
+          >
+            <div
+              class="form-card"
+              style="margin-bottom: 1.5rem; padding: 1.25rem"
+            >
+              <h3
+                style="
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: var(--primary-deep);
+                "
+              >
+                የስራ ቪዛ ማመልከቻዎች (Visa Applications)
+              </h3>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>አመልካች</th>
+                    <th>ሀገር</th>
+                    <th>ፓስፖርት ቁጥር</th>
+                    <th>ማብቂያ ቀን</th>
+                    <th>የጉዞ ቀን</th>
+                    <th>ፊርማ</th>
+                    <th>ሁኔታ</th>
+                    <th>ኤሌክትሮኒክ ቪዛ መስጠት</th>
+                  </tr>
+                </thead>
+                <tbody id="adminVisasTbody">
+                  <tr>
+                    <td colspan="8" style="text-align: center; padding: 2rem">
+                      ምንም የቪዛ ማመልከቻ የለም
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB: APPOINTMENTS (Multi-Stage Workflow: 3800 ETB, Job Offer, Bank Statement, Visa) -->
+          <div
+            id="tabContentAppointments"
+            class="admin-tab-content"
+            style="display: none"
+          >
+            <div
+              class="form-card"
+              style="margin-bottom: 1.5rem; padding: 1.25rem"
+            >
+              <div
+                style="
+                  display: flex;
+                  gap: 1rem;
+                  flex-wrap: wrap;
+                  align-items: flex-end;
+                "
+              >
+                <div style="flex: 1; min-width: 220px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >ፈልግ / Search (Name or OTP)</label
+                  >
+                  <input
+                    type="text"
+                    id="adminSearchAppointment"
+                    class="form-control"
+                    placeholder="Search appointments by name or OTP..."
+                  />
+                </div>
+                <div style="width: 200px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >የቀጠሮ ደረጃ / Stage</label
+                  >
+                  <select id="adminFilterAppStage" class="form-control">
+                    <option value="ALL">All Stages / ሁሉም ደረጃዎች</option>
+                    <option value="registration_fee">
+                      1. የ3,800 ብር ክፍያ ቀጠሮ
+                    </option>
+                    <option value="job_offer">2. የስራ ጥሪ ቀጠሮ</option>
+                    <option value="bank_statement">3. የባንክ ስቴትመንት ቀጠሮ</option>
+                    <option value="visa">4. የቪዛ ማጠናቀቂያ ቀጠሮ</option>
+                  </select>
+                </div>
+                <div style="width: 160px">
+                  <label class="form-label" style="font-size: 0.8rem"
+                    >ሁኔታ / Status</label
+                  >
+                  <select id="adminFilterAppStatus" class="form-control">
+                    <option value="ALL">All Statuses</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="btnRefreshAppointments"
+                  style="min-height: 42px"
+                >
+                  አድስ / Refresh
+                </button>
+              </div>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>OTP</th>
+                    <th>አመልካች ስም</th>
+                    <th>የቀጠሮ ደረጃ (Workflow Stage)</th>
+                    <th>ቀንና ሰዓት</th>
+                    <th>ቦታ</th>
+                    <th>ሁኔታ</th>
+                    <th>ማስታወሻ</th>
+                    <th>ተግባራት</th>
+                  </tr>
+                </thead>
+                <tbody id="adminAppointmentsTbody">
+                  <tr>
+                    <td colspan="8" style="text-align: center; padding: 2rem">
+                      ምንም ቀጠሮ አልተገኘም
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB 4: SETTINGS -->
+          <div
+            id="tabContentSettings"
+            class="admin-tab-content"
+            style="display: none"
+          >
+            <div
+              class="form-card"
+              style="max-width: 680px; margin: 0 auto; padding: 2rem"
+            >
+              <h3
+                style="
+                  font-size: 1.3rem;
+                  font-weight: 800;
+                  color: var(--primary-deep);
+                  margin-bottom: 1.5rem;
+                  border-bottom: 1px solid var(--border-light);
+                  padding-bottom: 0.75rem;
+                "
+              >
+                የፖርታል ይፋዊ መረጃዎች ማስተካከያ (Portal Settings)
+              </h3>
+
+              <form id="adminSettingsForm">
+                <!-- Phone Number -->
+                <div class="form-group">
+                  <label class="form-label" for="settingPhoneNumber">
+                    ይፋዊ የእርዳታ ስልክ ቁጥር / Contact Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    id="settingPhoneNumber"
+                    class="form-control"
+                    value="0924865172"
+                    required
+                  />
+                  <span class="form-help"
+                    >ይህ ስልክ ቁጥር በሙሉ ገፆች አናት ላይ እና በክፍያ ገጾች ላይ ይታያል።</span
+                  >
+                </div>
+
+                <!-- Bank Account Number -->
+                <div class="form-group">
+                  <label class="form-label" for="settingBankAcc">
+                    የኢትዮጵያ ንግድ ባንክ (CBE) አካውንት ቁጥር / Bank Account
+                  </label>
+                  <input
+                    type="text"
+                    id="settingBankAcc"
+                    class="form-control"
+                    value="1000671389712"
+                    required
+                  />
+                  <span class="form-help"
+                    >ለአመልካቾች የሚታየው ይፋዊ የCBE አካውንት ቁጥር።</span
+                  >
+                </div>
+
+                <!-- Hero Title -->
+                <div class="form-group">
+                  <label class="form-label" for="settingHeroTitle">
+                    የመግቢያ ርዕስ / Hero Title
+                  </label>
+                  <input
+                    type="text"
+                    id="settingHeroTitle"
+                    class="form-control"
+                    value="E-LMIS AUE"
+                    required
+                  />
+                </div>
+
+                <!-- Hero Description -->
+                <div class="form-group">
+                  <label class="form-label" for="settingHeroDesc">
+                    የመግቢያ መግለጫ / Hero Description
+                  </label>
+                  <textarea id="settingHeroDesc" class="form-control" rows="3">
+ይፋዊ የውጭ ሀገር የስራ እድል ምዝገባ፣ አመልካቾች መቆጣጠሪያ፣ የቪዛ እና የጣት ምልክት መከታተያ ስርዓት።</textarea
+                  >
+                </div>
+
+                <!-- Bank Statement Fee & Text -->
+                <div class="form-group">
+                  <label class="form-label" for="settingBankStatement">
+                    የባንክ ስቴትመንት ማሳሰቢያ ጽሁፍ / Bank Statement Text
+                  </label>
+                  <input
+                    type="text"
+                    id="settingBankStatement"
+                    class="form-control"
+                    value="የባንክ ስቴትመንት ክፍያ"
+                    required
+                  />
+                </div>
+
+                <div style="margin-top: 2rem">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block"
+                    id="btnSaveSettings"
+                  >
+                    ቅንብሮችን መዝግብ / SAVE SETTINGS
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- TAB 5: AUDIT LOGS -->
+          <div
+            id="tabContentLogs"
+            class="admin-tab-content"
+            style="display: none"
+          >
+            <div
+              class="form-card"
+              style="margin-bottom: 1.5rem; padding: 1.25rem"
+            >
+              <h3
+                style="
+                  font-size: 1.15rem;
+                  font-weight: 700;
+                  color: var(--primary-deep);
+                "
+              >
+                የአስተዳዳሪ የስራ እንቅስቃሴ መዝገብ (Staff Audit Logs)
+              </h3>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>ቀንና ሰዓት</th>
+                    <th>ተጠቃሚ</th>
+                    <th>ተግባር (Action)</th>
+                    <th>ዝርዝር መግለጫ</th>
+                  </tr>
+                </thead>
+                <tbody id="adminLogsTbody">
+                  <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem">
+                      ምንም እንቅስቃሴ አልተመዘገበም
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL: APPLICANT DETAILS & ACTIONS -->
+    <div class="modal-overlay" id="applicantDetailsModal" style="display: none">
+      <div
+        class="modal-dialog"
+        style="max-width: 750px; max-height: 90vh; overflow-y: auto"
+      >
+        <div class="modal-header">
+          <h3
+            id="modalAppTitle"
+            style="
+              font-size: 1.25rem;
+              font-weight: 800;
+              color: var(--primary-deep);
+            "
+          >
+            የአመልካች ሙሉ ዝርዝር መረጃ
+          </h3>
+          <button type="button" class="modal-close" id="btnCloseAppModal">
+            &times;
+          </button>
+        </div>
+
+        <div class="modal-body" id="modalAppBodyContent">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: ADD JOB OFFER -->
+    <div class="modal-overlay" id="jobOfferModal" style="display: none">
+      <div class="modal-dialog" style="max-width: 540px">
+        <div class="modal-header">
+          <h3
+            style="
+              font-size: 1.2rem;
+              font-weight: 800;
+              color: var(--primary-deep);
+            "
+          >
+            የስራ ጥሪ ማስታወቂያ ላክ (Send Job Offer)
+          </h3>
+          <button type="button" class="modal-close" id="btnCloseJobOfferModal">
+            &times;
+          </button>
+        </div>
+
+        <form id="jobOfferForm" class="modal-body">
+          <input type="hidden" id="offerApplicantId" />
+          <div class="form-group">
+            <label class="form-label"
+              >የስራ መደብ ርዕስ / Job Title <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="offerJobTitle"
+              class="form-control"
+              placeholder="ምሳሌ፡ ማብሰያ / Cook"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >ሀገር / Country <span class="required">*</span></label
+            >
+            <select id="offerCountry" class="form-control">
+              <option value="Dubai">Dubai</option>
+              <option value="Kuwait">Kuwait</option>
+              <option value="Qatar">Qatar</option>
+              <option value="Saudi Arabia">Saudi Arabia</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ማብራሪያ / Description</label>
+            <textarea
+              id="offerDescription"
+              class="form-control"
+              rows="3"
+              placeholder="የስራ ሁኔታ፣ ደመወዝ እና ሌሎች ማብራሪያዎች..."
+            ></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              >የስራ ጥሪ ደብዳቤ ምስል / Offer Letter Image (Optional)</label
+            >
+            <input
+              type="file"
+              id="offerImageInput"
+              class="form-control"
+              accept="image/*"
+            />
+          </div>
+          <div style="margin-top: 1.5rem">
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
+              id="btnSubmitJobOffer"
+            >
+              የስራ ጥሪውን ላክ / SEND OFFER
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: ISSUE ELECTRONIC VISA -->
+    <div class="modal-overlay" id="issueVisaModal" style="display: none">
+      <div class="modal-dialog" style="max-width: 520px">
+        <div class="modal-header">
+          <h3
+            style="
+              font-size: 1.2rem;
+              font-weight: 800;
+              color: var(--primary-deep);
+            "
+          >
+            ኤሌክትሮኒክ ቪዛ ማጽደቅ (Issue Electronic Visa)
+          </h3>
+          <button type="button" class="modal-close" id="btnCloseIssueVisaModal">
+            &times;
+          </button>
+        </div>
+
+        <form id="issueVisaForm" class="modal-body">
+          <input type="hidden" id="issueVisaApplicantId" />
+          <input type="hidden" id="issueVisaApplicationId" />
+          <div class="form-group">
+            <label class="form-label">ሀገር / Country</label>
+            <input
+              type="text"
+              id="issueVisaCountry"
+              class="form-control"
+              readonly
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">የጉዞ ቀን / Travel Date</label>
+            <input type="date" id="issueVisaTravelDate" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">የቪዛ ማብቂያ ቀን / Expiry Date</label>
+            <input type="date" id="issueVisaExpiryDate" class="form-control" />
+          </div>
+          <div style="margin-top: 1.5rem">
+            <button
+              type="submit"
+              class="btn btn-gold btn-block"
+              id="btnSubmitIssueVisa"
+            >
+              ቪዛውን አጽድቅና ሰርተፊኬት ፍጠር / APPROVE & ISSUE
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL: SEND APPOINTMENT (Multi-Stage Workflow) -->
+    <div class="modal-overlay" id="appointmentModal" style="display: none">
+      <div class="modal-dialog" style="max-width: 580px">
+        <div class="modal-header">
+          <h3
+            style="
+              font-size: 1.25rem;
+              font-weight: 800;
+              color: var(--primary-deep);
+            "
+          >
+            📅 የቀጠሮ ማስታወቂያ ላክ (Send Appointment)
+          </h3>
+          <button
+            type="button"
+            class="modal-close"
+            id="btnCloseAppointmentModal"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form id="appointmentForm" class="modal-body">
+          <input type="hidden" id="appApplicantId" />
+          <input type="hidden" id="appApplicantOtp" />
+          <input type="hidden" id="appAppointmentId" />
+
+          <!-- Applicant Summary Badge -->
+          <div
+            id="appointmentApplicantSummary"
+            style="
+              background: #f1f5f9;
+              padding: 0.75rem 1rem;
+              border-radius: var(--radius-sm);
+              margin-bottom: 1.25rem;
+              border-left: 4px solid var(--primary-blue);
+            "
+          >
+            <strong
+              id="appApplicantNameDisplay"
+              style="color: var(--primary-deep); font-size: 1rem"
+              >-</strong
+            >
+            <div
+              style="
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                margin-top: 0.25rem;
+              "
+            >
+              OTP:
+              <strong
+                id="appApplicantOtpDisplay"
+                style="color: var(--primary-blue)"
+                >-</strong
+              >
+              | ሀገር: <span id="appApplicantCountryDisplay">-</span>
+            </div>
+          </div>
+
+          <!-- Stage Selector -->
+          <div class="form-group">
+            <label class="form-label"
+              >የቀጠሮ ደረጃ / Workflow Stage <span class="required">*</span></label
+            >
+            <select id="appointmentStage" class="form-control" required>
+              <option value="registration_fee">
+                1. የ3,800 ብር ምዝገባ ክፍያ ቀጠሮ (Post-3,800 ETB Payment)
+              </option>
+              <option value="job_offer">
+                2. የስራ እድል ጥሪ ቀጠሮ (Post-Job Offer Appointment)
+              </option>
+              <option value="bank_statement">
+                3. የባንክ ስቴትመንት ቀጠሮ (Post-Bank Statement 46,300 ETB)
+              </option>
+              <option value="visa">
+                4. የቪዛ ማጠናቀቂያ ቀጠሮ (Post-Visa Final Appointment)
+              </option>
+            </select>
+            <span class="form-help"
+              >ይህ ቀጠሮ በአመልካቹ መገለጫ (Profile) ላይ በቀጥታ ይታያል።</span
+            >
+          </div>
+
+          <!-- Date & Time Grid -->
+          <div class="form-grid" style="margin-bottom: 0">
+            <div class="form-group">
+              <label class="form-label"
+                >የቀጠሮ ቀን / Date <span class="required">*</span></label
+              >
+              <input
+                type="date"
+                id="appointmentDate"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >የቀጠሮ ሰዓት / Time <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="appointmentTime"
+                class="form-control"
+                placeholder="ምሳሌ፡ 3:30 የጠዋት ሰዓት / 09:30 AM"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label class="form-label"
+              >የቀጠሮ ቦታ / Office Location <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="appointmentLocation"
+              class="form-control"
+              value="E-LMIS AUE Main Office, Addis Ababa, Bole Sub-City"
+              required
+            />
+          </div>
+
+          <!-- Notes / Instructions -->
+          <div class="form-group">
+            <label class="form-label"
+              >የአስተዳዳሪ መመሪያ ወይም ማስታወሻ / Office Instructions</label
+            >
+            <textarea
+              id="appointmentNotes"
+              class="form-control"
+              rows="3"
+              placeholder="ምሳሌ፡ እባክዎ የመጀመሪያ ደረጃ ሰነዶችዎን፣ ፓስፖርትዎን እና የባንክ ደረሰኝ ይዘው ይምጡ..."
+            ></textarea>
+          </div>
+
+          <div style="margin-top: 1.5rem">
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
+              id="btnSubmitAppointment"
+            >
+              ቀጠሮውን ለአመልካቹ ላክ / SEND APPOINTMENT
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer
+      class="footer-main"
+      style="
+        margin-top: 3rem;
+        background: var(--primary-deep);
+        color: white;
+        padding: 2rem 0;
+      "
+    >
+      <div class="container" style="text-align: center">
+        <p style="margin-bottom: 0.35rem">
+          &copy; 2026 E-LMIS AUE Portal Administration. All rights reserved.
+        </p>
+        <p style="font-size: 0.9rem; color: #fef08a">
+          Official Support Email:
+          <a
+            href="mailto:binecan012@gmail.com"
+            style="color: #fef08a; text-decoration: underline"
+            >binecan012@gmail.com</a
+          >
+          | Helpline: 0924865172
+        </p>
+      </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>
