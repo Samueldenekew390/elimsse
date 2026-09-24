@@ -79,7 +79,10 @@ function initAdminAuth() {
 
       try {
         if (supabase) {
-          const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
           if (error) throw error;
           handleUserLoggedIn(data.user);
           showToast("እንኳን ደህና መጡ! በተሳካ ሁኔታ ገብተዋል።", "success");
@@ -116,7 +119,8 @@ function handleUserLoggedIn(user) {
   document.getElementById("adminLoginSection").style.display = "none";
   document.getElementById("adminDashboardSection").style.display = "block";
   document.getElementById("adminNavUserSection").style.display = "flex";
-  document.getElementById("adminUserEmail").textContent = user.email || "Staff Admin";
+  document.getElementById("adminUserEmail").textContent =
+    user.email || "Staff Admin";
 
   loadApplicantsTab();
 }
@@ -131,9 +135,9 @@ function handleUserLoggedOut() {
 // 2. TAB NAVIGATION
 function initTabNavigation() {
   const tabs = document.querySelectorAll(".admin-tab-btn");
-  tabs.forEach(tab => {
+  tabs.forEach((tab) => {
     tab.addEventListener("click", () => {
-      tabs.forEach(t => {
+      tabs.forEach((t) => {
         t.classList.remove("active", "btn-primary");
         t.classList.add("btn-secondary");
       });
@@ -143,7 +147,9 @@ function initTabNavigation() {
       const tabName = tab.getAttribute("data-tab");
       currentTab = tabName;
 
-      document.querySelectorAll(".admin-tab-content").forEach(c => c.style.display = "none");
+      document
+        .querySelectorAll(".admin-tab-content")
+        .forEach((c) => (c.style.display = "none"));
 
       if (tabName === "applicants") {
         document.getElementById("tabContentApplicants").style.display = "block";
@@ -155,7 +161,8 @@ function initTabNavigation() {
         document.getElementById("tabContentVisas").style.display = "block";
         loadVisasTab();
       } else if (tabName === "appointments") {
-        document.getElementById("tabContentAppointments").style.display = "block";
+        document.getElementById("tabContentAppointments").style.display =
+          "block";
         loadAppointmentsTab();
       } else if (tabName === "settings") {
         document.getElementById("tabContentSettings").style.display = "block";
@@ -174,11 +181,16 @@ function initTabNavigation() {
   const filterType = document.getElementById("adminFilterType");
   const btnRefresh = document.getElementById("btnRefreshApplicants");
 
-  [searchInput, filterCountry, filterStatus, filterType].forEach(el => {
+  [searchInput, filterCountry, filterStatus, filterType].forEach((el) => {
     if (el) el.addEventListener("change", () => loadApplicantsTab());
   });
-  if (searchInput) searchInput.addEventListener("input", debounce(() => loadApplicantsTab(), 400));
-  if (btnRefresh) btnRefresh.addEventListener("click", () => loadApplicantsTab());
+  if (searchInput)
+    searchInput.addEventListener(
+      "input",
+      debounce(() => loadApplicantsTab(), 400),
+    );
+  if (btnRefresh)
+    btnRefresh.addEventListener("click", () => loadApplicantsTab());
 
   // Payments filter
   const filterPayment = document.getElementById("adminFilterPaymentType");
@@ -192,11 +204,16 @@ function initTabNavigation() {
   const filterAppStatus = document.getElementById("adminFilterAppStatus");
   const btnRefreshAppts = document.getElementById("btnRefreshAppointments");
 
-  [filterAppStage, filterAppStatus].forEach(el => {
+  [filterAppStage, filterAppStatus].forEach((el) => {
     if (el) el.addEventListener("change", () => loadAppointmentsTab());
   });
-  if (searchAppt) searchAppt.addEventListener("input", debounce(() => loadAppointmentsTab(), 400));
-  if (btnRefreshAppts) btnRefreshAppts.addEventListener("click", () => loadAppointmentsTab());
+  if (searchAppt)
+    searchAppt.addEventListener(
+      "input",
+      debounce(() => loadAppointmentsTab(), 400),
+    );
+  if (btnRefreshAppts)
+    btnRefreshAppts.addEventListener("click", () => loadAppointmentsTab());
 }
 
 function debounce(fn, delay) {
@@ -214,7 +231,10 @@ async function loadApplicantsTab() {
 
   tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 2rem;">መረጃ በመጫን ላይ ነው...</td></tr>`;
 
-  const search = document.getElementById("adminSearchApplicant").value.trim().toLowerCase();
+  const search = document
+    .getElementById("adminSearchApplicant")
+    .value.trim()
+    .toLowerCase();
   const country = document.getElementById("adminFilterCountry").value;
   const status = document.getElementById("adminFilterStatus").value;
   const type = document.getElementById("adminFilterType").value;
@@ -224,7 +244,10 @@ async function loadApplicantsTab() {
     let applicants = [];
 
     if (supabase) {
-      let query = supabase.from("applicants").select("*").order("created_at", { ascending: false });
+      let query = supabase
+        .from("applicants")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (country !== "ALL") query = query.eq("country", country);
       if (status !== "ALL") query = query.eq("status", status);
@@ -236,12 +259,19 @@ async function loadApplicantsTab() {
       const { data, error } = await query;
       if (!error && data) applicants = data;
     } else {
-      let local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-      if (country !== "ALL") local = local.filter(a => a.country === country);
-      if (status !== "ALL") local = local.filter(a => a.status === status);
-      if (type !== "ALL") local = local.filter(a => a.registration_type === type);
+      let local = JSON.parse(
+        localStorage.getItem("elmis_demo_applicants") || "[]",
+      );
+      if (country !== "ALL") local = local.filter((a) => a.country === country);
+      if (status !== "ALL") local = local.filter((a) => a.status === status);
+      if (type !== "ALL")
+        local = local.filter((a) => a.registration_type === type);
       if (search) {
-        local = local.filter(a => (a.full_name || "").toLowerCase().includes(search) || (a.otp || "").toLowerCase().includes(search));
+        local = local.filter(
+          (a) =>
+            (a.full_name || "").toLowerCase().includes(search) ||
+            (a.otp || "").toLowerCase().includes(search),
+        );
       }
       applicants = local;
     }
@@ -251,12 +281,20 @@ async function loadApplicantsTab() {
       return;
     }
 
-    tbody.innerHTML = applicants.map(app => {
-      const age = calculateAge(app.date_of_birth);
-      const photo = app.photo_path || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-      const badgeClass = app.status === "Approved" ? "badge-approved" : app.status === "Rejected" ? "badge-rejected" : "badge-pending";
+    tbody.innerHTML = applicants
+      .map((app) => {
+        const age = calculateAge(app.date_of_birth);
+        const photo =
+          app.photo_path ||
+          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+        const badgeClass =
+          app.status === "Approved"
+            ? "badge-approved"
+            : app.status === "Rejected"
+              ? "badge-rejected"
+              : "badge-pending";
 
-      return `
+        return `
         <tr>
           <td>
             <img src="${photo}" alt="" style="width: 42px; height: 42px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-light);" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'%23cbd5e1\\'%3E%3Cpath d=\\'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z\\'/%3E%3C/svg%3E'" />
@@ -276,21 +314,30 @@ async function loadApplicantsTab() {
               <button type="button" class="btn btn-primary" onclick="openJobOfferModal('${app.id || app.otp}', '${app.country || "Dubai"}')" style="min-height: 32px; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
                 Offer
               </button>
-              ${app.status !== "Approved" ? `
+              ${
+                app.status !== "Approved"
+                  ? `
                 <button type="button" class="btn btn-primary" onclick="quickUpdateStatus('${app.id || app.otp}', 'Approved')" style="min-height: 32px; padding: 0.25rem 0.5rem; font-size: 0.75rem; background: var(--success);">
                   âœ“
                 </button>
-              ` : ""}
-              ${app.status !== "Rejected" ? `
+              `
+                  : ""
+              }
+              ${
+                app.status !== "Rejected"
+                  ? `
                 <button type="button" class="btn btn-secondary" onclick="quickUpdateStatus('${app.id || app.otp}', 'Rejected')" style="min-height: 32px; padding: 0.25rem 0.5rem; font-size: 0.75rem; color: var(--danger);">
                   âœ—
                 </button>
-              ` : ""}
+              `
+                  : ""
+              }
             </div>
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   } catch (err) {
     console.error("Load applicants error:", err);
     tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--danger);">መረጃውን ማምጣት አልተቻለም።</td></tr>`;
@@ -308,10 +355,15 @@ window.quickUpdateStatus = async function (idOrOtp, newStatus) {
         .or(`id.eq.${idOrOtp},otp.eq.${idOrOtp}`);
 
       // Log audit
-      await logAuditAction("Update Applicant Status", `Set status to ${newStatus} for applicant ${idOrOtp}`);
+      await logAuditAction(
+        "Update Applicant Status",
+        `Set status to ${newStatus} for applicant ${idOrOtp}`,
+      );
     } else {
-      const local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-      const app = local.find(a => a.id === idOrOtp || a.otp === idOrOtp);
+      const local = JSON.parse(
+        localStorage.getItem("elmis_demo_applicants") || "[]",
+      );
+      const app = local.find((a) => a.id === idOrOtp || a.otp === idOrOtp);
       if (app) app.status = newStatus;
       localStorage.setItem("elmis_demo_applicants", JSON.stringify(local));
     }
@@ -347,22 +399,42 @@ window.viewApplicantDetails = async function (idOrOtp) {
       app = data;
 
       if (app) {
-        const { data: jobData } = await supabase.from("applicant_jobs").select("*").eq("applicant_id", app.id);
-        const { data: payData } = await supabase.from("payments").select("*").eq("applicant_id", app.id);
-        const { data: fpData } = await supabase.from("fingerprint_status").select("*").eq("applicant_id", app.id).single();
-        const { data: apptData } = await supabase.from("appointments").select("*").eq("applicant_id", app.id).order("created_at", { ascending: true });
+        const { data: jobData } = await supabase
+          .from("applicant_jobs")
+          .select("*")
+          .eq("applicant_id", app.id);
+        const { data: payData } = await supabase
+          .from("payments")
+          .select("*")
+          .eq("applicant_id", app.id);
+        const { data: fpData } = await supabase
+          .from("fingerprint_status")
+          .select("*")
+          .eq("applicant_id", app.id)
+          .single();
+        const { data: apptData } = await supabase
+          .from("appointments")
+          .select("*")
+          .eq("applicant_id", app.id)
+          .order("created_at", { ascending: true });
         jobs = jobData || [];
         payments = payData || [];
         fp = fpData;
         appts = apptData || [];
       }
     } else {
-      const local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-      app = local.find(a => a.id === idOrOtp || a.otp === idOrOtp);
+      const local = JSON.parse(
+        localStorage.getItem("elmis_demo_applicants") || "[]",
+      );
+      app = local.find((a) => a.id === idOrOtp || a.otp === idOrOtp);
       if (app) {
-        jobs = (app.jobs || []).map(j => ({ job_name: j }));
-        payments = JSON.parse(localStorage.getItem("elmis_demo_payments") || "[]").filter(p => p.otp === app.otp);
-        appts = JSON.parse(localStorage.getItem("elmis_demo_appointments") || "[]").filter(a => a.otp === app.otp || a.applicant_id === app.id);
+        jobs = (app.jobs || []).map((j) => ({ job_name: j }));
+        payments = JSON.parse(
+          localStorage.getItem("elmis_demo_payments") || "[]",
+        ).filter((p) => p.otp === app.otp);
+        appts = JSON.parse(
+          localStorage.getItem("elmis_demo_appointments") || "[]",
+        ).filter((a) => a.otp === app.otp || a.applicant_id === app.id);
       }
     }
 
@@ -372,7 +444,9 @@ window.viewApplicantDetails = async function (idOrOtp) {
     }
 
     const age = calculateAge(app.date_of_birth);
-    const photo = app.photo_path || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
+    const photo =
+      app.photo_path ||
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='%23cbd5e1'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
 
     body.innerHTML = `
       <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap;">
@@ -404,7 +478,7 @@ window.viewApplicantDetails = async function (idOrOtp) {
       <div style="margin-bottom: 1.5rem;">
         <strong style="display: block; margin-bottom: 0.5rem;">የተመረጡ የስራ አይነቶች:</strong>
         <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-          ${jobs.length > 0 ? jobs.map(j => `<span class="badge" style="background:#eff6ff; color:var(--primary-deep); border:1px solid var(--border-color);">${j.job_name}</span>`).join("") : `<span style="color:var(--text-muted);">የለም</span>`}
+          ${jobs.length > 0 ? jobs.map((j) => `<span class="badge" style="background:#eff6ff; color:var(--primary-deep); border:1px solid var(--border-color);">${j.job_name}</span>`).join("") : `<span style="color:var(--text-muted);">የለም</span>`}
         </div>
       </div>
 
@@ -432,9 +506,13 @@ window.viewApplicantDetails = async function (idOrOtp) {
           <span style="font-size: 0.8rem; color: var(--text-muted);">4-Stage Appointment Workflow</span>
         </div>
 
-        ${appts.length > 0 ? `
+        ${
+          appts.length > 0
+            ? `
           <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-            ${appts.map(apt => `
+            ${appts
+              .map(
+                (apt) => `
               <div style="background: white; border: 1px solid var(--border-color); border-left: 4px solid var(--primary-blue); padding: 0.6rem 0.8rem; border-radius: var(--radius-sm); font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                 <div>
                   <strong style="color: var(--primary-deep);">${apt.stage}</strong>: 📅 ${apt.appointment_date} @ ⏰ ${apt.appointment_time}
@@ -442,23 +520,27 @@ window.viewApplicantDetails = async function (idOrOtp) {
                 </div>
                 <span class="badge ${apt.status === "Scheduled" ? "badge-approved" : "badge-pending"}">${apt.status}</span>
               </div>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </div>
-        ` : `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">እስካሁን የተላከ ቀጠሮ የለም።</p>`}
+        `
+            : `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">እስካሁን የተላከ ቀጠሮ የለም።</p>`
+        }
 
         <div style="border-top: 1px dashed var(--border-color); padding-top: 0.75rem;">
           <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">አዲስ ቀጠሮ ላክ (Send Stage Appointment):</span>
           <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || '')}', '${app.country || 'Dubai'}', 'registration_fee')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || "")}', '${app.country || "Dubai"}', 'registration_fee')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
               + 1. የ3,800 ብር ክፍያ ቀጠሮ
             </button>
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || '')}', '${app.country || 'Dubai'}', 'job_offer')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || "")}', '${app.country || "Dubai"}', 'job_offer')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
               + 2. የስራ ጥሪ ቀጠሮ
             </button>
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || '')}', '${app.country || 'Dubai'}', 'bank_statement')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || "")}', '${app.country || "Dubai"}', 'bank_statement')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
               + 3. የባንክ ስቴትመንት ቀጠሮ
             </button>
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || '')}', '${app.country || 'Dubai'}', 'visa')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('applicantDetailsModal').style.display='none'; openAppointmentModal('${app.id}', '${app.otp}', '${encodeURIComponent(app.full_name || "")}', '${app.country || "Dubai"}', 'visa')" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">
               + 4. የቪዛ ማጠናቀቂያ ቀጠሮ
             </button>
           </div>
@@ -488,15 +570,23 @@ window.saveFingerprintStatus = async function (applicantId, otp) {
   try {
     const supabase = window.ELMIS.getClient();
     if (supabase) {
-      await supabase.from("fingerprint_status").upsert({
-        applicant_id: applicantId,
-        status: status,
-        updated_at: new Date().toISOString()
-      }, { onConflict: "applicant_id" });
-      await logAuditAction("Update Fingerprint", `Set fingerprint to ${status} for applicant ${applicantId}`);
+      await supabase.from("fingerprint_status").upsert(
+        {
+          applicant_id: applicantId,
+          status: status,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "applicant_id" },
+      );
+      await logAuditAction(
+        "Update Fingerprint",
+        `Set fingerprint to ${status} for applicant ${applicantId}`,
+      );
     } else {
-      const local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-      const a = local.find(x => x.otp === otp || x.id === applicantId);
+      const local = JSON.parse(
+        localStorage.getItem("elmis_demo_applicants") || "[]",
+      );
+      const a = local.find((x) => x.otp === otp || x.id === applicantId);
       if (a) {
         a.fingerprint = { status };
         localStorage.setItem("elmis_demo_applicants", JSON.stringify(local));
@@ -531,13 +621,19 @@ async function loadPaymentsTab() {
     let payments = [];
 
     if (supabase) {
-      let query = supabase.from("payments").select("*, applicants(full_name, otp, mobile_number)").order("created_at", { ascending: false });
+      let query = supabase
+        .from("payments")
+        .select("*, applicants(full_name, otp, mobile_number)")
+        .order("created_at", { ascending: false });
       if (filterType !== "ALL") query = query.eq("payment_type", filterType);
       const { data, error } = await query;
       if (!error && data) payments = data;
     } else {
-      let demo = JSON.parse(localStorage.getItem("elmis_demo_payments") || "[]");
-      if (filterType !== "ALL") demo = demo.filter(p => p.payment_type === filterType);
+      let demo = JSON.parse(
+        localStorage.getItem("elmis_demo_payments") || "[]",
+      );
+      if (filterType !== "ALL")
+        demo = demo.filter((p) => p.payment_type === filterType);
       payments = demo;
     }
 
@@ -546,13 +642,24 @@ async function loadPaymentsTab() {
       return;
     }
 
-    tbody.innerHTML = payments.map(p => {
-      const applicantName = p.applicants?.full_name || "Applicant";
-      const otp = p.applicants?.otp || p.otp || "-";
-      const typeLabel = p.payment_type === "registration" ? "ምዝገባ (3,800 ETB)" : p.payment_type === "processing" ? "ሂደት (18,200 ETB)" : "ስቴትመንት (46,300 ETB)";
-      const badgeClass = p.status === "Approved" ? "badge-approved" : p.status === "Rejected" ? "badge-rejected" : "badge-pending";
+    tbody.innerHTML = payments
+      .map((p) => {
+        const applicantName = p.applicants?.full_name || "Applicant";
+        const otp = p.applicants?.otp || p.otp || "-";
+        const typeLabel =
+          p.payment_type === "registration"
+            ? "ምዝገባ (3,800 ETB)"
+            : p.payment_type === "processing"
+              ? "ሂደት (18,200 ETB)"
+              : "ስቴትመንት (46,300 ETB)";
+        const badgeClass =
+          p.status === "Approved"
+            ? "badge-approved"
+            : p.status === "Rejected"
+              ? "badge-rejected"
+              : "badge-pending";
 
-      return `
+        return `
         <tr>
           <td>
             <strong>${applicantName}</strong><br>
@@ -561,11 +668,15 @@ async function loadPaymentsTab() {
           <td>${typeLabel}</td>
           <td><strong>${p.amount} ETB</strong></td>
           <td>
-            ${p.receipt_path ? `
+            ${
+              p.receipt_path
+                ? `
               <a href="${p.receipt_path}" target="_blank" class="btn btn-secondary" style="min-height: 28px; padding: 0.2rem 0.5rem; font-size: 0.75rem;">
                 ደረሰኝ ይመልከቱ / View
               </a>
-            ` : `<span style="color: var(--text-muted); font-size: 0.8rem;">${p.filename || "Uploaded"}</span>`}
+            `
+                : `<span style="color: var(--text-muted); font-size: 0.8rem;">${p.filename || "Uploaded"}</span>`
+            }
           </td>
           <td style="font-size: 0.8rem;">${new Date(p.created_at || Date.now()).toLocaleDateString()}</td>
           <td><span class="badge ${badgeClass}">${p.status}</span></td>
@@ -581,7 +692,8 @@ async function loadPaymentsTab() {
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   } catch (err) {
     console.error("Load payments error:", err);
     tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--danger);">መጫን አልተቻለም</td></tr>`;
@@ -592,11 +704,19 @@ window.updatePaymentDecision = async function (idOrOtp, decision) {
   try {
     const supabase = window.ELMIS.getClient();
     if (supabase) {
-      await supabase.from("payments").update({ status: decision }).eq("id", idOrOtp);
-      await logAuditAction("Payment Decision", `Set payment ${idOrOtp} to ${decision}`);
+      await supabase
+        .from("payments")
+        .update({ status: decision })
+        .eq("id", idOrOtp);
+      await logAuditAction(
+        "Payment Decision",
+        `Set payment ${idOrOtp} to ${decision}`,
+      );
     } else {
-      const demo = JSON.parse(localStorage.getItem("elmis_demo_payments") || "[]");
-      const found = demo.find(p => p.otp === idOrOtp);
+      const demo = JSON.parse(
+        localStorage.getItem("elmis_demo_payments") || "[]",
+      );
+      const found = demo.find((p) => p.otp === idOrOtp);
       if (found) found.status = decision;
       localStorage.setItem("elmis_demo_payments", JSON.stringify(demo));
     }
@@ -634,12 +754,15 @@ async function loadVisasTab() {
       return;
     }
 
-    tbody.innerHTML = visas.map(v => {
-      const appName = v.applicants?.full_name || `${v.first_name || ""} ${v.last_name || ""}`;
-      const otp = v.applicants?.otp || v.otp || "-";
-      const isApproved = v.status === "Approved";
+    tbody.innerHTML = visas
+      .map((v) => {
+        const appName =
+          v.applicants?.full_name ||
+          `${v.first_name || ""} ${v.last_name || ""}`;
+        const otp = v.applicants?.otp || v.otp || "-";
+        const isApproved = v.status === "Approved";
 
-      return `
+        return `
         <tr>
           <td>
             <strong>${appName}</strong><br>
@@ -650,23 +773,32 @@ async function loadVisasTab() {
           <td>${v.passport_expiry_date || "-"}</td>
           <td>${v.travel_date || "-"}</td>
           <td>
-            ${v.signature_data ? `
+            ${
+              v.signature_data
+                ? `
               <img src="${v.signature_data}" alt="Signature" style="max-height: 28px; background: #fff; border: 1px solid var(--border-light); padding: 2px;" />
-            ` : `<span style="color: var(--text-muted);">-</span>`}
+            `
+                : `<span style="color: var(--text-muted);">-</span>`
+            }
           </td>
           <td><span class="badge ${isApproved ? "badge-approved" : "badge-pending"}">${v.status}</span></td>
           <td>
-            ${!isApproved ? `
+            ${
+              !isApproved
+                ? `
               <button type="button" class="btn btn-primary" onclick="openIssueVisaModal('${v.applicant_id || v.otp}', '${v.id || ""}', '${v.country}')" style="min-height: 30px; padding: 0.2rem 0.6rem; font-size: 0.75rem;">
                 ቪዛ አጽድቅ / Issue E-Visa
               </button>
-            ` : `
+            `
+                : `
               <span style="font-size: 0.8rem; color: var(--success); font-weight: 700;">âœ“ ጸድቋል</span>
-            `}
+            `
+            }
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   } catch (err) {
     console.error("Load visas error:", err);
     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger);">መጫን አልተቻለም</td></tr>`;
@@ -681,8 +813,12 @@ window.openIssueVisaModal = function (applicantId, applicationId, country) {
 
   // Defaults: travel date 30 days ahead, expiry 2 years ahead
   const now = new Date();
-  const travelDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-  const expiryDate = new Date(now.getTime() + 730 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const travelDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+  const expiryDate = new Date(now.getTime() + 730 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
 
   document.getElementById("issueVisaTravelDate").value = travelDate;
   document.getElementById("issueVisaExpiryDate").value = expiryDate;
@@ -693,6 +829,50 @@ window.openIssueVisaModal = function (applicantId, applicationId, country) {
 // 8. SETTINGS TAB
 function initSettingsTab() {
   const form = document.getElementById("adminSettingsForm");
+  const passwordForm = document.getElementById("adminPasswordForm");
+
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newPassword = document.getElementById("adminNewPassword").value;
+      const confirmPassword = document.getElementById(
+        "adminConfirmPassword",
+      ).value;
+      const submitBtn = document.getElementById("btnChangeAdminPassword");
+
+      if (newPassword !== confirmPassword) {
+        showToast("የይለፍ ቃሎቹ አይመሳሰሉም።", "error");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "እየተቀየረ ነው...";
+
+      try {
+        const supabase = window.ELMIS.getClient();
+        if (!supabase) throw new Error("Supabase Auth is not configured.");
+
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword,
+        });
+        if (error) throw error;
+
+        passwordForm.reset();
+        showToast("የአስተዳዳሪ ይለፍ ቃል ተቀይሯል።", "success");
+        await logAuditAction(
+          "Change Admin Password",
+          "Changed the signed-in admin password",
+        );
+      } catch (err) {
+        console.error("Change password error:", err);
+        showToast(err.message || "የይለፍ ቃሉን መቀየር አልተቻለም።", "error");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "ይለፍ ቃል ቀይር / CHANGE PASSWORD";
+      }
+    });
+  }
+
   if (!form) return;
 
   form.addEventListener("submit", async (e) => {
@@ -701,7 +881,9 @@ function initSettingsTab() {
     const bank = document.getElementById("settingBankAcc").value.trim();
     const heroTitle = document.getElementById("settingHeroTitle").value.trim();
     const heroDesc = document.getElementById("settingHeroDesc").value.trim();
-    const bankStatement = document.getElementById("settingBankStatement").value.trim();
+    const bankStatement = document
+      .getElementById("settingBankStatement")
+      .value.trim();
 
     const submitBtn = document.getElementById("btnSaveSettings");
     submitBtn.disabled = true;
@@ -714,14 +896,19 @@ function initSettingsTab() {
         { setting_key: "bank_account_number", setting_value: bank },
         { setting_key: "hero_title", setting_value: heroTitle },
         { setting_key: "hero_description", setting_value: heroDesc },
-        { setting_key: "bank_statement_text", setting_value: bankStatement }
+        { setting_key: "bank_statement_text", setting_value: bankStatement },
       ];
 
       if (supabase) {
         for (const item of settingsPayload) {
-          await supabase.from("settings").upsert(item, { onConflict: "setting_key" });
+          await supabase
+            .from("settings")
+            .upsert(item, { onConflict: "setting_key" });
         }
-        await logAuditAction("Update Settings", "Updated portal phone, bank, and copy settings");
+        await logAuditAction(
+          "Update Settings",
+          "Updated portal phone, bank, and copy settings",
+        );
       }
 
       // Update local storage defaults
@@ -748,12 +935,20 @@ async function loadSettingsTab() {
   try {
     const { data } = await supabase.from("settings").select("*");
     if (data) {
-      data.forEach(item => {
-        if (item.setting_key === "phone_number") document.getElementById("settingPhoneNumber").value = item.setting_value;
-        if (item.setting_key === "bank_account_number") document.getElementById("settingBankAcc").value = item.setting_value;
-        if (item.setting_key === "hero_title") document.getElementById("settingHeroTitle").value = item.setting_value;
-        if (item.setting_key === "hero_description") document.getElementById("settingHeroDesc").value = item.setting_value;
-        if (item.setting_key === "bank_statement_text") document.getElementById("settingBankStatement").value = item.setting_value;
+      data.forEach((item) => {
+        if (item.setting_key === "phone_number")
+          document.getElementById("settingPhoneNumber").value =
+            item.setting_value;
+        if (item.setting_key === "bank_account_number")
+          document.getElementById("settingBankAcc").value = item.setting_value;
+        if (item.setting_key === "hero_title")
+          document.getElementById("settingHeroTitle").value =
+            item.setting_value;
+        if (item.setting_key === "hero_description")
+          document.getElementById("settingHeroDesc").value = item.setting_value;
+        if (item.setting_key === "bank_statement_text")
+          document.getElementById("settingBankStatement").value =
+            item.setting_value;
       });
     }
   } catch (err) {
@@ -773,7 +968,11 @@ async function loadLogsTab() {
     let logs = [];
 
     if (supabase) {
-      const { data } = await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(50);
+      const { data } = await supabase
+        .from("audit_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
       if (data) logs = data;
     } else {
       logs = JSON.parse(localStorage.getItem("elmis_demo_logs") || "[]");
@@ -784,14 +983,18 @@ async function loadLogsTab() {
       return;
     }
 
-    tbody.innerHTML = logs.map(l => `
+    tbody.innerHTML = logs
+      .map(
+        (l) => `
       <tr>
         <td style="font-size: 0.85rem; color: var(--text-muted);">${new Date(l.created_at || Date.now()).toLocaleString()}</td>
         <td><strong>${l.user_email || "Admin Staff"}</strong></td>
         <td><span class="badge badge-pending">${l.action}</span></td>
         <td>${l.details || "-"}</td>
       </tr>
-    `).join("");
+    `,
+      )
+      .join("");
   } catch (err) {
     console.error(err);
   }
@@ -800,21 +1003,25 @@ async function loadLogsTab() {
 async function logAuditAction(action, details) {
   try {
     const supabase = window.ELMIS.getClient();
-    const userEmail = currentAdminUser ? currentAdminUser.email : "admin@elmis.gov";
+    const userEmail = currentAdminUser
+      ? currentAdminUser.email
+      : "admin@elmis.gov";
 
     if (supabase) {
-      await supabase.from("audit_logs").insert([{
-        user_email: userEmail,
-        action: action,
-        details: details
-      }]);
+      await supabase.from("audit_logs").insert([
+        {
+          user_email: userEmail,
+          action: action,
+          details: details,
+        },
+      ]);
     } else {
       const logs = JSON.parse(localStorage.getItem("elmis_demo_logs") || "[]");
       logs.unshift({
         user_email: userEmail,
         action: action,
         details: details,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       });
       localStorage.setItem("elmis_demo_logs", JSON.stringify(logs));
     }
@@ -829,18 +1036,24 @@ function initModals() {
   document.getElementById("btnCloseAppModal")?.addEventListener("click", () => {
     document.getElementById("applicantDetailsModal").style.display = "none";
   });
-  document.getElementById("btnCloseJobOfferModal")?.addEventListener("click", () => {
-    document.getElementById("jobOfferModal").style.display = "none";
-  });
-  document.getElementById("btnCloseIssueVisaModal")?.addEventListener("click", () => {
-    document.getElementById("issueVisaModal").style.display = "none";
-  });
-  document.getElementById("btnCloseAppointmentModal")?.addEventListener("click", () => {
-    document.getElementById("appointmentModal").style.display = "none";
-  });
+  document
+    .getElementById("btnCloseJobOfferModal")
+    ?.addEventListener("click", () => {
+      document.getElementById("jobOfferModal").style.display = "none";
+    });
+  document
+    .getElementById("btnCloseIssueVisaModal")
+    ?.addEventListener("click", () => {
+      document.getElementById("issueVisaModal").style.display = "none";
+    });
+  document
+    .getElementById("btnCloseAppointmentModal")
+    ?.addEventListener("click", () => {
+      document.getElementById("appointmentModal").style.display = "none";
+    });
 
   // Close when clicking backdrop
-  document.querySelectorAll(".modal-overlay").forEach(overlay => {
+  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
     overlay.addEventListener("click", (e) => {
       if (e.target === overlay) overlay.style.display = "none";
     });
@@ -868,44 +1081,60 @@ function initModals() {
         if (imageInput.files && imageInput.files[0]) {
           const file = imageInput.files[0];
           if (supabase) {
-            const ext = file.name.split('.').pop();
+            const ext = file.name.split(".").pop();
             const filePath = `offers/${Date.now()}.${ext}`;
-            const { error: upErr } = await supabase.storage.from("offer-letters").upload(filePath, file);
+            const { error: upErr } = await supabase.storage
+              .from("offer-letters")
+              .upload(filePath, file);
             if (!upErr) {
-              const { data: pubData } = supabase.storage.from("offer-letters").getPublicUrl(filePath);
+              const { data: pubData } = supabase.storage
+                .from("offer-letters")
+                .getPublicUrl(filePath);
               imagePath = pubData?.publicUrl || filePath;
             }
           } else {
             // Read file as data URL for demo
-            imagePath = await new Promise(resolve => {
+            imagePath = await new Promise((resolve) => {
               const r = new FileReader();
-              r.onload = ev => resolve(ev.target.result);
+              r.onload = (ev) => resolve(ev.target.result);
               r.readAsDataURL(file);
             });
           }
         }
 
         if (supabase) {
-          await supabase.from("job_offers").insert([{
-            applicant_id: applicantId,
-            job_title: jobTitle,
-            country: country,
-            description: desc,
-            image_path: imagePath
-          }]);
-          await logAuditAction("Job Offer Issued", `Issued job offer ${jobTitle} for applicant ${applicantId}`);
+          await supabase.from("job_offers").insert([
+            {
+              applicant_id: applicantId,
+              job_title: jobTitle,
+              country: country,
+              description: desc,
+              image_path: imagePath,
+            },
+          ]);
+          await logAuditAction(
+            "Job Offer Issued",
+            `Issued job offer ${jobTitle} for applicant ${applicantId}`,
+          );
         } else {
-          const local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-          const a = local.find(x => x.id === applicantId || x.otp === applicantId);
+          const local = JSON.parse(
+            localStorage.getItem("elmis_demo_applicants") || "[]",
+          );
+          const a = local.find(
+            (x) => x.id === applicantId || x.otp === applicantId,
+          );
           if (a) {
             a.job_offer = {
               job_title: jobTitle,
               country,
               description: desc,
               image_path: imagePath,
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
             };
-            localStorage.setItem("elmis_demo_applicants", JSON.stringify(local));
+            localStorage.setItem(
+              "elmis_demo_applicants",
+              JSON.stringify(local),
+            );
           }
         }
 
@@ -928,7 +1157,9 @@ function initModals() {
     issueVisaForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const applicantId = document.getElementById("issueVisaApplicantId").value;
-      const applicationId = document.getElementById("issueVisaApplicationId").value;
+      const applicationId = document.getElementById(
+        "issueVisaApplicationId",
+      ).value;
       const country = document.getElementById("issueVisaCountry").value;
       const travelDate = document.getElementById("issueVisaTravelDate").value;
       const expiryDate = document.getElementById("issueVisaExpiryDate").value;
@@ -943,30 +1174,45 @@ function initModals() {
 
         if (supabase) {
           // Insert into electronic_visas
-          const { error: evError } = await supabase.from("electronic_visas").insert([{
-            applicant_id: applicantId,
-            verification_code: verificationCode,
-            country: country,
-            visa_type: "Work Visa",
-            travel_date: travelDate,
-            expiry_date: expiryDate,
-            status: "Approved"
-          }]);
+          const { error: evError } = await supabase
+            .from("electronic_visas")
+            .insert([
+              {
+                applicant_id: applicantId,
+                verification_code: verificationCode,
+                country: country,
+                visa_type: "Work Visa",
+                travel_date: travelDate,
+                expiry_date: expiryDate,
+                status: "Approved",
+              },
+            ]);
 
           if (evError) throw evError;
 
           // Update visa application status
           if (applicationId) {
-            await supabase.from("visa_applications").update({ status: "Approved" }).eq("id", applicationId);
+            await supabase
+              .from("visa_applications")
+              .update({ status: "Approved" })
+              .eq("id", applicationId);
           }
 
           // Update applicant status
-          await supabase.from("applicants").update({ status: "Approved" }).eq("id", applicantId);
+          await supabase
+            .from("applicants")
+            .update({ status: "Approved" })
+            .eq("id", applicantId);
 
-          await logAuditAction("Issued Electronic Visa", `Created e-visa ${verificationCode} for applicant ${applicantId}`);
+          await logAuditAction(
+            "Issued Electronic Visa",
+            `Created e-visa ${verificationCode} for applicant ${applicantId}`,
+          );
         } else {
           // Demo fallback
-          const demoEvisas = JSON.parse(localStorage.getItem("elmis_demo_evisas") || "[]");
+          const demoEvisas = JSON.parse(
+            localStorage.getItem("elmis_demo_evisas") || "[]",
+          );
           demoEvisas.unshift({
             verification_code: verificationCode,
             applicant_id: applicantId,
@@ -976,16 +1222,27 @@ function initModals() {
             expiry_date: expiryDate,
             issue_date: new Date().toISOString(),
             status: "Approved",
-            full_name: "Applicant"
+            full_name: "Applicant",
           });
           localStorage.setItem("elmis_demo_evisas", JSON.stringify(demoEvisas));
 
-          const localApps = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-          const found = localApps.find(a => a.id === applicantId || a.otp === applicantId);
+          const localApps = JSON.parse(
+            localStorage.getItem("elmis_demo_applicants") || "[]",
+          );
+          const found = localApps.find(
+            (a) => a.id === applicantId || a.otp === applicantId,
+          );
           if (found) {
             found.status = "Approved";
-            found.electronic_visa = { verification_code: verificationCode, country, status: "Approved" };
-            localStorage.setItem("elmis_demo_applicants", JSON.stringify(localApps));
+            found.electronic_visa = {
+              verification_code: verificationCode,
+              country,
+              status: "Approved",
+            };
+            localStorage.setItem(
+              "elmis_demo_applicants",
+              JSON.stringify(localApps),
+            );
           }
         }
 
@@ -1007,25 +1264,34 @@ function initModals() {
 
 // 11. APPOINTMENTS TAB & MODAL (4-Stage Workflow)
 const STAGE_CONFIGS = {
-  "registration_fee": {
+  registration_fee: {
     label: "1. የ3,800 ብር ክፍያ ቀጠሮ (Registration Fee Appt)",
-    defaultNotes: "የ3,800 ብር የቅድመ ክፍያ ደረሰኝዎ ስለጸደቀ እባክዎ የመጀመሪያ ደረጃ ቃለ-መጠይቅ እና ሰነዶችዎን ለማረጋገጥ ወደ ቢሮአችን ይምጡ።"
+    defaultNotes:
+      "የ3,800 ብር የቅድመ ክፍያ ደረሰኝዎ ስለጸደቀ እባክዎ የመጀመሪያ ደረጃ ቃለ-መጠይቅ እና ሰነዶችዎን ለማረጋገጥ ወደ ቢሮአችን ይምጡ።",
   },
-  "job_offer": {
+  job_offer: {
     label: "2. የስራ እድል ጥሪ ቀጠሮ (Job Offer Appt)",
-    defaultNotes: "የተዘጋጀውን ይፋዊ የስራ ጥሪ ስምምነት (Job Offer Contract) ለመፈረም እና የጣት አሻራ ሂደት ለመጀመር ይምጡ።"
+    defaultNotes:
+      "የተዘጋጀውን ይፋዊ የስራ ጥሪ ስምምነት (Job Offer Contract) ለመፈረም እና የጣት አሻራ ሂደት ለመጀመር ይምጡ።",
   },
-  "bank_statement": {
+  bank_statement: {
     label: "3. የባንክ ስቴትመንት ቀጠሮ (Bank Statement Appt)",
-    defaultNotes: "የ46,300 ብር የባንክ ስቴትመንት ሂደት ማረጋገጫ ለመውሰድ እና የፋይናንስ ሰነድ ለመፈረም ይምጡ።"
+    defaultNotes:
+      "የ46,300 ብር የባንክ ስቴትመንት ሂደት ማረጋገጫ ለመውሰድ እና የፋይናንስ ሰነድ ለመፈረም ይምጡ።",
   },
-  "visa": {
+  visa: {
     label: "4. የቪዛ ማጠናቀቂያ ቀጠሮ (Final Visa Appt)",
-    defaultNotes: "ቪዛዎ ተጠናቋል! ፓስፖርትዎን እና ይፋዊ የጉዞ ቪዛዎን ለመውሰድ ወደ ቢሮአችን ይምጡ።"
-  }
+    defaultNotes: "ቪዛዎ ተጠናቋል! ፓስፖርትዎን እና ይፋዊ የጉዞ ቪዛዎን ለመውሰድ ወደ ቢሮአችን ይምጡ።",
+  },
 };
 
-window.openAppointmentModal = function(applicantId, otp, name, country, stage = "registration_fee") {
+window.openAppointmentModal = function (
+  applicantId,
+  otp,
+  name,
+  country,
+  stage = "registration_fee",
+) {
   const modal = document.getElementById("appointmentModal");
   if (!modal) return;
 
@@ -1035,7 +1301,8 @@ window.openAppointmentModal = function(applicantId, otp, name, country, stage = 
   document.getElementById("appApplicantOtp").value = otp || "";
   document.getElementById("appApplicantNameDisplay").textContent = decodedName;
   document.getElementById("appApplicantOtpDisplay").textContent = otp || "-";
-  document.getElementById("appApplicantCountryDisplay").textContent = country || "Dubai";
+  document.getElementById("appApplicantCountryDisplay").textContent =
+    country || "Dubai";
 
   const stageSelect = document.getElementById("appointmentStage");
   if (stageSelect) {
@@ -1049,10 +1316,13 @@ window.openAppointmentModal = function(applicantId, otp, name, country, stage = 
   const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
   const dd = String(tomorrow.getDate()).padStart(2, "0");
   document.getElementById("appointmentDate").value = `${yyyy}-${mm}-${dd}`;
-  document.getElementById("appointmentDate").min = new Date().toISOString().split("T")[0];
+  document.getElementById("appointmentDate").min = new Date()
+    .toISOString()
+    .split("T")[0];
 
   document.getElementById("appointmentTime").value = "09:30 AM (3:30 የጠዋት ሰዓት)";
-  document.getElementById("appointmentLocation").value = "E-LMIS AUE Main Office, Addis Ababa, Bole Sub-City";
+  document.getElementById("appointmentLocation").value =
+    "E-LMIS AUE Main Office, Addis Ababa, Bole Sub-City";
 
   const cfg = STAGE_CONFIGS[stage] || STAGE_CONFIGS["registration_fee"];
   document.getElementById("appointmentNotes").value = cfg.defaultNotes;
@@ -1060,11 +1330,21 @@ window.openAppointmentModal = function(applicantId, otp, name, country, stage = 
   modal.style.display = "flex";
 };
 
-window.openAppointmentModalForApplicant = function(applicantId, otp, name, country, stage) {
+window.openAppointmentModalForApplicant = function (
+  applicantId,
+  otp,
+  name,
+  country,
+  stage,
+) {
   openAppointmentModal(applicantId, otp, name, country, stage);
 };
 
-window.openAppointmentModalForPaymentRecord = async function(applicantId, otp, paymentType) {
+window.openAppointmentModalForPaymentRecord = async function (
+  applicantId,
+  otp,
+  paymentType,
+) {
   let stage = "registration_fee";
   if (paymentType === "bank_statement") stage = "bank_statement";
   else if (paymentType === "processing") stage = "job_offer";
@@ -1073,7 +1353,11 @@ window.openAppointmentModalForPaymentRecord = async function(applicantId, otp, p
   let country = "Dubai";
   const supabase = window.ELMIS.getClient();
   if (supabase) {
-    const { data } = await supabase.from("applicants").select("id, otp, full_name, country").or(`id.eq.${applicantId},otp.eq.${otp}`).single();
+    const { data } = await supabase
+      .from("applicants")
+      .select("id, otp, full_name, country")
+      .or(`id.eq.${applicantId},otp.eq.${otp}`)
+      .single();
     if (data) {
       applicantId = data.id;
       otp = data.otp;
@@ -1081,8 +1365,10 @@ window.openAppointmentModalForPaymentRecord = async function(applicantId, otp, p
       country = data.country;
     }
   } else {
-    const local = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
-    const found = local.find(a => a.id === applicantId || a.otp === otp);
+    const local = JSON.parse(
+      localStorage.getItem("elmis_demo_applicants") || "[]",
+    );
+    const found = local.find((a) => a.id === applicantId || a.otp === otp);
     if (found) {
       name = found.full_name;
       country = found.country;
@@ -1102,7 +1388,10 @@ function initAppointmentModal() {
     stageSelect.addEventListener("change", (e) => {
       const selected = e.target.value;
       const cfg = STAGE_CONFIGS[selected];
-      if (cfg && !document.getElementById("appointmentNotes").value.includes("ተስተካክሏል")) {
+      if (
+        cfg &&
+        !document.getElementById("appointmentNotes").value.includes("ተስተካክሏል")
+      ) {
         document.getElementById("appointmentNotes").value = cfg.defaultNotes;
       }
     });
@@ -1116,7 +1405,9 @@ function initAppointmentModal() {
       const stage = document.getElementById("appointmentStage").value;
       const date = document.getElementById("appointmentDate").value;
       const time = document.getElementById("appointmentTime").value.trim();
-      const location = document.getElementById("appointmentLocation").value.trim();
+      const location = document
+        .getElementById("appointmentLocation")
+        .value.trim();
       const notes = document.getElementById("appointmentNotes").value.trim();
       const submitBtn = document.getElementById("btnSubmitAppointment");
 
@@ -1126,20 +1417,27 @@ function initAppointmentModal() {
       try {
         const supabase = window.ELMIS.getClient();
         if (supabase) {
-          const { error } = await supabase.from("appointments").insert([{
-            applicant_id: applicantId,
-            stage: stage,
-            appointment_date: date,
-            appointment_time: time,
-            location: location,
-            notes: notes,
-            status: "Scheduled"
-          }]);
+          const { error } = await supabase.from("appointments").insert([
+            {
+              applicant_id: applicantId,
+              stage: stage,
+              appointment_date: date,
+              appointment_time: time,
+              location: location,
+              notes: notes,
+              status: "Scheduled",
+            },
+          ]);
           if (error) throw error;
-          await logAuditAction("Scheduled Appointment", `Sent ${stage} appointment on ${date} ${time} to applicant ${applicantId}`);
+          await logAuditAction(
+            "Scheduled Appointment",
+            `Sent ${stage} appointment on ${date} ${time} to applicant ${applicantId}`,
+          );
         } else {
           // Demo fallback
-          const localAppts = JSON.parse(localStorage.getItem("elmis_demo_appointments") || "[]");
+          const localAppts = JSON.parse(
+            localStorage.getItem("elmis_demo_appointments") || "[]",
+          );
           localAppts.unshift({
             id: `apt-${Date.now()}`,
             applicant_id: applicantId,
@@ -1150,9 +1448,12 @@ function initAppointmentModal() {
             location: location,
             notes: notes,
             status: "Scheduled",
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
           });
-          localStorage.setItem("elmis_demo_appointments", JSON.stringify(localAppts));
+          localStorage.setItem(
+            "elmis_demo_appointments",
+            JSON.stringify(localAppts),
+          );
         }
 
         showToast("የቀጠሮ ጥሪው በተሳካ ሁኔታ ለአመልካቹ ተልኳል!", "success");
@@ -1180,9 +1481,15 @@ async function loadAppointmentsTab() {
   tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem;">ቀጠሮዎች በመጫን ላይ ናቸው...</td></tr>`;
 
   try {
-    const stageFilter = document.getElementById("adminFilterAppStage")?.value || "ALL";
-    const statusFilter = document.getElementById("adminFilterAppStatus")?.value || "ALL";
-    const searchFilter = (document.getElementById("adminSearchAppointment")?.value || "").trim().toLowerCase();
+    const stageFilter =
+      document.getElementById("adminFilterAppStage")?.value || "ALL";
+    const statusFilter =
+      document.getElementById("adminFilterAppStatus")?.value || "ALL";
+    const searchFilter = (
+      document.getElementById("adminSearchAppointment")?.value || ""
+    )
+      .trim()
+      .toLowerCase();
 
     const supabase = window.ELMIS.getClient();
     let appointments = [];
@@ -1199,23 +1506,43 @@ async function loadAppointmentsTab() {
       const { data, error } = await query;
       if (!error && data) appointments = data;
     } else {
-      appointments = JSON.parse(localStorage.getItem("elmis_demo_appointments") || "[]");
-      const localApps = JSON.parse(localStorage.getItem("elmis_demo_applicants") || "[]");
+      appointments = JSON.parse(
+        localStorage.getItem("elmis_demo_appointments") || "[]",
+      );
+      const localApps = JSON.parse(
+        localStorage.getItem("elmis_demo_applicants") || "[]",
+      );
 
-      appointments = appointments.map(apt => {
-        const found = localApps.find(a => a.id === apt.applicant_id || a.otp === apt.otp);
+      appointments = appointments.map((apt) => {
+        const found = localApps.find(
+          (a) => a.id === apt.applicant_id || a.otp === apt.otp,
+        );
         return {
           ...apt,
-          applicants: found ? { id: found.id, full_name: found.full_name, otp: found.otp, country: found.country } : { id: apt.applicant_id, full_name: "Applicant", otp: apt.otp, country: "Dubai" }
+          applicants: found
+            ? {
+                id: found.id,
+                full_name: found.full_name,
+                otp: found.otp,
+                country: found.country,
+              }
+            : {
+                id: apt.applicant_id,
+                full_name: "Applicant",
+                otp: apt.otp,
+                country: "Dubai",
+              },
         };
       });
 
-      if (stageFilter !== "ALL") appointments = appointments.filter(a => a.stage === stageFilter);
-      if (statusFilter !== "ALL") appointments = appointments.filter(a => a.status === statusFilter);
+      if (stageFilter !== "ALL")
+        appointments = appointments.filter((a) => a.stage === stageFilter);
+      if (statusFilter !== "ALL")
+        appointments = appointments.filter((a) => a.status === statusFilter);
     }
 
     if (searchFilter) {
-      appointments = appointments.filter(a => {
+      appointments = appointments.filter((a) => {
         const name = (a.applicants?.full_name || "").toLowerCase();
         const otp = (a.applicants?.otp || a.otp || "").toLowerCase();
         return name.includes(searchFilter) || otp.includes(searchFilter);
@@ -1227,14 +1554,15 @@ async function loadAppointmentsTab() {
       return;
     }
 
-    tbody.innerHTML = appointments.map(apt => {
-      const appName = apt.applicants?.full_name || "Applicant";
-      const otp = apt.applicants?.otp || apt.otp || "-";
-      const stageObj = STAGE_CONFIGS[apt.stage] || { label: apt.stage };
-      const isScheduled = apt.status === "Scheduled";
-      const isCompleted = apt.status === "Completed";
+    tbody.innerHTML = appointments
+      .map((apt) => {
+        const appName = apt.applicants?.full_name || "Applicant";
+        const otp = apt.applicants?.otp || apt.otp || "-";
+        const stageObj = STAGE_CONFIGS[apt.stage] || { label: apt.stage };
+        const isScheduled = apt.status === "Scheduled";
+        const isCompleted = apt.status === "Completed";
 
-      return `
+        return `
         <tr>
           <td><code style="font-weight: 700; color: var(--primary-deep);">${otp}</code></td>
           <td><strong>${appName}</strong></td>
@@ -1256,36 +1584,49 @@ async function loadAppointmentsTab() {
           <td style="font-size: 0.8rem; max-width: 200px; color: var(--text-muted);">${apt.notes || "-"}</td>
           <td>
             <div style="display: flex; gap: 0.3rem;">
-              ${isScheduled ? `
+              ${
+                isScheduled
+                  ? `
                 <button type="button" class="btn btn-primary" onclick="updateAppointmentStatus('${apt.id}', 'Completed')" style="min-height: 28px; padding: 0.2rem 0.5rem; font-size: 0.75rem; background: var(--success);" title="Mark as Completed">
                   ✓ አጠናቅቅ
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="updateAppointmentStatus('${apt.id}', 'Cancelled')" style="min-height: 28px; padding: 0.2rem 0.5rem; font-size: 0.75rem; color: var(--danger);" title="Cancel Appointment">
                   ✕ ሰርዝ
                 </button>
-              ` : `
+              `
+                  : `
                 <span style="font-size: 0.75rem; color: var(--text-muted);">-</span>
-              `}
+              `
+              }
             </div>
           </td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   } catch (err) {
     console.error("Load appointments error:", err);
     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--danger);">መጫን አልተቻለም</td></tr>`;
   }
 }
 
-window.updateAppointmentStatus = async function(id, newStatus) {
+window.updateAppointmentStatus = async function (id, newStatus) {
   try {
     const supabase = window.ELMIS.getClient();
     if (supabase) {
-      await supabase.from("appointments").update({ status: newStatus }).eq("id", id);
-      await logAuditAction("Updated Appointment Status", `Set appointment ${id} to ${newStatus}`);
+      await supabase
+        .from("appointments")
+        .update({ status: newStatus })
+        .eq("id", id);
+      await logAuditAction(
+        "Updated Appointment Status",
+        `Set appointment ${id} to ${newStatus}`,
+      );
     } else {
-      const local = JSON.parse(localStorage.getItem("elmis_demo_appointments") || "[]");
-      const found = local.find(a => a.id === id);
+      const local = JSON.parse(
+        localStorage.getItem("elmis_demo_appointments") || "[]",
+      );
+      const found = local.find((a) => a.id === id);
       if (found) found.status = newStatus;
       localStorage.setItem("elmis_demo_appointments", JSON.stringify(local));
     }
