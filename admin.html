@@ -619,6 +619,57 @@
                   </button>
                 </div>
               </form>
+
+              <form
+                id="adminPasswordForm"
+                style="
+                  margin-top: 2rem;
+                  padding-top: 1.5rem;
+                  border-top: 1px solid var(--border-light);
+                "
+              >
+                <h4
+                  style="
+                    font-size: 1.1rem;
+                    font-weight: 800;
+                    color: var(--primary-deep);
+                    margin-bottom: 1rem;
+                  "
+                >
+                  የአስተዳዳሪ ይለፍ ቃል / Admin Password
+                </h4>
+                <div class="form-group">
+                  <label class="form-label" for="adminNewPassword"
+                    >አዲስ ይለፍ ቃል / New Password</label
+                  >
+                  <input
+                    type="password"
+                    id="adminNewPassword"
+                    class="form-control"
+                    minlength="6"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="adminConfirmPassword"
+                    >አዲሱን ይለፍ ቃል ያረጋግጡ / Confirm New Password</label
+                  >
+                  <input
+                    type="password"
+                    id="adminConfirmPassword"
+                    class="form-control"
+                    minlength="6"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="btn btn-secondary"
+                  id="btnChangeAdminPassword"
+                >
+                  ይለፍ ቃል ቀይር / CHANGE PASSWORD
+                </button>
+              </form>
             </div>
           </div>
 
